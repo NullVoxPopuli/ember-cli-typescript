@@ -66,23 +66,6 @@ export default addon({
     }
   },
 
-  async postBuild() {
-    // This code makes the fundamental assumption that the TS compiler's fs watcher
-    // will notice a file change before the full Broccoli build completes. Otherwise
-    // the `getStatus` call here might report the status of the previous check. In
-    // practice, though, building takes much longer than the time to trigger the
-    // compiler's "hey, a file changed" hook, and once the typecheck has begun, the
-    // `getStatus` call will block until it's complete.
-    let worker = await this._getTypecheckWorker();
-    let { failed } = await worker.getStatus();
-
-    if (failed) {
-      // The actual details of the errors will already have been printed
-      // with nice highlighting and formatting separately.
-      throw new Error('Typechecking failed');
-    }
-  },
-
   setupPreprocessorRegistry(type, registry) {
     if (type !== 'parent') return;
 
